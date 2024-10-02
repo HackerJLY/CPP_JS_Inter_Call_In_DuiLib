@@ -19,6 +19,80 @@ CHelloDuilibWnd::~CHelloDuilibWnd()
 {
 }
 
+
+wstring GetCurrentExeFileFullPathName()
+{
+	WCHAR szwcharFileName[MAX_PATH];
+
+	GetModuleFileName(NULL, szwcharFileName, MAX_PATH);
+
+	//wstring strExeFileFullPathName(szwcharFileName);
+	//return strExeFileFullPathName;
+
+	return szwcharFileName;
+}
+
+//获取程序目录，带最后“\”
+wstring GetCurrentExeFileFullPath()
+{
+	wstring strExeFileFullPathName;
+	int iCharPosition;
+
+	strExeFileFullPathName = GetCurrentExeFileFullPathName();
+
+	iCharPosition = strExeFileFullPathName.rfind(L'\\');
+
+	return strExeFileFullPathName.substr(0, iCharPosition + 1);
+}
+
+wstring GetCurrentExeFileNameWithExtendName()
+{
+	wstring strExeFileFullPathName;
+	int iCharPosition;
+
+	strExeFileFullPathName = GetCurrentExeFileFullPathName();
+
+	iCharPosition = strExeFileFullPathName.rfind(L'\\');
+
+	return strExeFileFullPathName.substr(iCharPosition + 1, strExeFileFullPathName.length() - iCharPosition - 1);
+
+}
+
+wstring GetCurrentExeFileNameWithoutExtendName()
+{
+	wstring strExeFileFullPathName;
+	int iCharPosition = 0;
+	int iCharPosition1 = 0;
+
+	wstring strTemp;
+	wstring strTemp1;
+	//==============================================================================================
+
+	strExeFileFullPathName = GetCurrentExeFileFullPathName();
+
+	strTemp = strExeFileFullPathName;
+
+	iCharPosition = strExeFileFullPathName.rfind(L'\\');
+
+	if (-1 != iCharPosition)
+	{
+		strTemp = strExeFileFullPathName.substr(iCharPosition + 1, strExeFileFullPathName.length() - iCharPosition - 1);
+	}
+
+	strTemp1 = strTemp;
+
+	iCharPosition1 = strTemp.rfind(L'.');
+
+	if (-1 != iCharPosition)
+	{
+		strTemp1 = strTemp.substr(0, iCharPosition1);
+	}
+
+	return strTemp1;
+}
+
+
+
 #if 1
 
 void CHelloDuilibWnd::OnWindowInitialized(TNotifyUI& msg)
@@ -35,10 +109,17 @@ void CHelloDuilibWnd::OnWindowInitialized(TNotifyUI& msg)
 
 	m_peditURL = (CEditUI*)m_PaintManager.FindControl(_T("editURL"));
 #endif
+	
+	wstring wstringTemp = GetCurrentExeFileFullPath();
+
+	wstringTemp += L"Javascript_call_cpp.html";
+
+	m_peditURL->SetText(wstringTemp.c_str());
+
+	m_pWebBrowserEx->Navigate2(m_peditURL->GetText().GetData());
 
 	//SetFocus 必须的，解决：点两次内嵌网页，才可以调用C++
 	m_pWebBrowserEx->SetFocus();
-
 }
 
 #endif
